@@ -8,6 +8,7 @@ const COUNTDOWN_SECONDS = 10;
 const DramaticCountdownButton: React.FC = () => {
   const [remaining, setRemaining] = useState(COUNTDOWN_SECONDS);
   const [isRunning, setIsRunning] = useState(false);
+  const [holyimlazy, setholyimlazy] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const countdownRef = useRef<HTMLAudioElement | null>(null);
@@ -31,6 +32,7 @@ const DramaticCountdownButton: React.FC = () => {
 
   const playDramaticSound = async () => {
     if (kaboomRef.current) {
+      kaboomRef.current.currentTime = 0.5;
       kaboomRef.current.play();
     }
   };
@@ -45,12 +47,12 @@ const DramaticCountdownButton: React.FC = () => {
       dingRef.current.play();
     }
     if (countdownRef.current) {
-      countdownRef.current.pause();
       countdownRef.current.currentTime = 30;
       countdownRef.current.play();
+      setholyimlazy(holyimlazy + 1);
     }
     let currentVolume = 0;
-    const fadeInStep = 1 / (2000 / 100); // Calculate step for each 100ms
+    const fadeInStep = 1 / (1500 / 100); // Calculate step for each 100ms
 
     fadeRef.current = setInterval(() => {
       currentVolume += fadeInStep;
@@ -86,7 +88,7 @@ const DramaticCountdownButton: React.FC = () => {
     }, 1000);
 
     return clearTimer;
-  }, [isRunning]);
+  }, [isRunning, holyimlazy]);
 
   // When countdown hits 0, play sound
   useEffect(() => {
