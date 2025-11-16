@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import countdown from "../assets/countdown.mp3";
+import countdown from "../assets/countdownw.mp3";
 import kaboom from "../assets/Kaboom.mp3";
+import ding from "../assets/ding.mp3";
 
 const COUNTDOWN_SECONDS = 10;
 
@@ -11,10 +12,14 @@ const DramaticCountdownButton: React.FC = () => {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const countdownRef = useRef<HTMLAudioElement | null>(null);
   const kaboomRef = useRef<HTMLAudioElement | null>(null);
+  const dingRef = useRef<HTMLAudioElement | null>(null);
+  const fadeRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     countdownRef.current = new Audio(countdown);
+    countdownRef.current.currentTime = 0;
     kaboomRef.current = new Audio(kaboom);
+    dingRef.current = new Audio(ding);
   }, []);
 
   const clearTimer = () => {
@@ -34,11 +39,26 @@ const DramaticCountdownButton: React.FC = () => {
   const handleClick = () => {
     setRemaining(COUNTDOWN_SECONDS);
     // Reset & restart audio
+    if (isRunning && dingRef.current) {
+      clearInterval(fadeRef.current!);
+      dingRef.current.play();
+    }
     if (countdownRef.current) {
       countdownRef.current.pause();
-      countdownRef.current.currentTime = 0;
+      countdownRef.current.currentTime = 30;
       countdownRef.current.play();
     }
+    let currentVolume = 0;
+    const fadeInStep = 1 / (2000 / 100); // Calculate step for each 100ms
+
+    fadeRef.current = setInterval(() => {
+      currentVolume += fadeInStep;
+      if (currentVolume >= 1) {
+        currentVolume = 1; // Cap at max volume
+        clearInterval(fadeRef.current!);
+      }
+      countdownRef.current!.volume = currentVolume;
+    }, 100); // Adjust interval for smoothness
     setIsRunning(true);
   };
 
