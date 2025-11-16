@@ -41,6 +41,7 @@ const DramaticCountdownButton: React.FC = () => {
     // Reset & restart audio
     if (isRunning && dingRef.current) {
       clearInterval(fadeRef.current!);
+      dingRef.current.currentTime = 0;
       dingRef.current.play();
     }
     if (countdownRef.current) {
